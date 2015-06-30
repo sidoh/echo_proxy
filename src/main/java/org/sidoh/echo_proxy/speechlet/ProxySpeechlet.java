@@ -58,19 +58,13 @@ public class ProxySpeechlet implements Speechlet {
       final int statusCode = proxyResponse.getStatusLine().getStatusCode();
 
       if (statusCode < 200 || statusCode > 299) {
-        throw new RuntimeException("Unhandled response code: " + statusCode);
+        return buildResponse("Error handling request. Response code was " + statusCode);
       }
 
       final HttpEntity entity = proxyResponse.getEntity();
       String responseString = EntityUtils.toString(entity, "UTF-8");
 
-      final PlainTextOutputSpeech output = new PlainTextOutputSpeech();
-      output.setText(responseString);
-
-      final SpeechletResponse response = new SpeechletResponse();
-      response.setOutputSpeech(output);
-
-      return response;
+      return buildResponse(responseString);
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
@@ -79,5 +73,15 @@ public class ProxySpeechlet implements Speechlet {
   @Override
   public void onSessionEnded(SessionEndedRequest sessionEndedRequest, Session session) throws SpeechletException {
 
+  }
+
+  private static SpeechletResponse buildResponse(String text) {
+    final PlainTextOutputSpeech output = new PlainTextOutputSpeech();
+    output.setText(text);
+
+    final SpeechletResponse response = new SpeechletResponse();
+    response.setOutputSpeech(output);
+
+    return response;
   }
 }
