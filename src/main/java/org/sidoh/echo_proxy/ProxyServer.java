@@ -14,11 +14,19 @@ public class ProxyServer {
   public static void main(String[] args) throws Exception {
     BasicConfigurator.configure();
 
+    final int port;
+
+    if (args.length == 0) {
+      port = 8888;
+    } else {
+      port = Integer.parseInt(args[0]);
+    }
+
     // Configure server and its associated servlets
     Server server = new Server();
 
     ServerConnector serverConnector = new ServerConnector(server);
-    serverConnector.setPort(8888);
+    serverConnector.setPort(port);
     server.setConnectors(new Connector[] { serverConnector });
 
     ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
@@ -28,8 +36,6 @@ public class ProxyServer {
     context.addServlet(new ServletHolder(createServlet(new ProxySpeechlet())), "/proxy");
     server.start();
     server.join();
-
-    org.eclipse.jetty.io.ByteBufferPool a;
   }
 
   private static SpeechletServlet createServlet(final Speechlet speechlet) {
