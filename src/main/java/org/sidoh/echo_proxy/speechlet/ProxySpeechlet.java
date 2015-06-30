@@ -1,7 +1,6 @@
 package org.sidoh.echo_proxy.speechlet;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 
 import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.LaunchRequest;
@@ -15,14 +14,20 @@ import com.amazon.speech.ui.PlainTextOutputSpeech;
 import com.google.gson.Gson;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ProxySpeechlet implements Speechlet {
-  private static final Logger LOG = LoggerFactory.getLogger(ProxySpeechlet.class);
+  private final String proxyUrl;
+  private final HttpClient httpClient;
+
+  public ProxySpeechlet(String proxyUrl) {
+    this.proxyUrl = proxyUrl;
+    this.httpClient = HttpClientBuilder.create().build();
+  }
 
   @Override
   public void onSessionStarted(SessionStartedRequest sessionStartedRequest, Session session) throws SpeechletException {
@@ -46,10 +51,17 @@ public class ProxySpeechlet implements Speechlet {
     final String requestJson = gson.toJson(intentRequest);
 
     try {
-      HttpResponse proxyResponse = new DefaultHttpClient().execute(new HttpGet(
-          "http://echo.sidoh.org/commands/create/a?command=" + URLEncoder.encode(requestJson, "UTF-8")));
+      final HttpPost request = new HttpPost(proxyUrl);
+      request.setEntity(new StringEntity(requestJson));
 
-      HttpEntity entity = proxyResponse.getEntity();
+      final HttpResponse proxyResponse = httpClient.execute(request);
+      final int statusCode = proxyResponse.getStatusLine().getStatusCode();
+
+      if (statusCode < 200 || statusCode > 299) {
+        throw new RuntimeException("Unhandled response code: " + statusCode);
+      }
+
+      final HttpEntity entity = proxyResponse.getEntity();
       String responseString = EntityUtils.toString(entity, "UTF-8");
 
       final PlainTextOutputSpeech output = new PlainTextOutputSpeech();

@@ -14,12 +14,13 @@ public class ProxyServer {
   public static void main(String[] args) throws Exception {
     BasicConfigurator.configure();
 
+    final String proxyUrl = args[0];
     final int port;
 
-    if (args.length == 0) {
+    if (args.length == 1) {
       port = 8888;
     } else {
-      port = Integer.parseInt(args[0]);
+      port = Integer.parseInt(args[1]);
     }
 
     // Configure server and its associated servlets
@@ -33,7 +34,7 @@ public class ProxyServer {
     context.setContextPath("/");
     server.setHandler(context);
 
-    context.addServlet(new ServletHolder(createServlet(new ProxySpeechlet())), "/proxy");
+    context.addServlet(new ServletHolder(createServlet(new ProxySpeechlet(proxyUrl))), "/proxy");
     server.start();
     server.join();
   }
