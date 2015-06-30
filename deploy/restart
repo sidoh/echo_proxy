@@ -5,4 +5,4 @@ if [ $(screen -ls | grep echo_proxy | wc -l) -eq 0 ]; then
 fi
 
 screen -x echo_proxy -X stuff '^c'
-screen -x echo_proxy -X stuff './run.sh\n'
+screen -x echo_proxy -X stuff './run.sh "http://echo.sidoh.org/commands/create"\n'
