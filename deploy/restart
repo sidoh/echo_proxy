@@ -1,7 +1,7 @@
 #!/bin/sh
 
 if [ $(screen -ls | grep echo_proxy | wc -l) -eq 0 ]; then
-  screen -S echo_proxy -d -m bash
+  screen -S echo_proxy -d -m /bin/bash
 fi
 
 screen -x echo_proxy -X stuff '^c'
