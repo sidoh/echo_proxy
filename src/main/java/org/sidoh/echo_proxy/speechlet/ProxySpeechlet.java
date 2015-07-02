@@ -1,7 +1,6 @@
 package org.sidoh.echo_proxy.speechlet;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
 import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.LaunchRequest;
@@ -32,10 +31,12 @@ public class ProxySpeechlet implements Speechlet {
   private final Gson gson;
 
   public static class ProxyRequest {
+    private final String requestType;
     private final SpeechletRequest request;
     private final Session session;
 
-    public ProxyRequest(SpeechletRequest request, Session session) {
+    public ProxyRequest(String requestType, SpeechletRequest request, Session session) {
+      this.requestType = requestType;
       this.request = request;
       this.session = session;
     }
@@ -112,7 +113,7 @@ public class ProxySpeechlet implements Speechlet {
   }
 
   private ProxyResponse postRequest(SpeechletRequest request, Session session) throws IOException {
-    final String requestJson = gson.toJson(new ProxyRequest(request, session));
+    final String requestJson = gson.toJson(new ProxyRequest(request.getClass().getSimpleName(), request, session));
 
     final HttpPost proxyRequest = new HttpPost(proxyUrl);
     proxyRequest.setEntity(new StringEntity(requestJson));
