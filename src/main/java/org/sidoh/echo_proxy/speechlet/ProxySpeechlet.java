@@ -1,6 +1,7 @@
 package org.sidoh.echo_proxy.speechlet;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import com.amazon.speech.speechlet.IntentRequest;
 import com.amazon.speech.speechlet.LaunchRequest;
@@ -18,7 +19,9 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultConnectionKeepAliveStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,7 +78,13 @@ public class ProxySpeechlet implements Speechlet {
 
   public ProxySpeechlet(String proxyUrl) {
     this.proxyUrl = proxyUrl;
-    this.httpClient = HttpClientBuilder.create().build();
+    this.httpClient = HttpClientBuilder
+        .create()
+        .disableAutomaticRetries()
+        .evictExpiredConnections()
+        .evictIdleConnections(1000L, TimeUnit.MILLISECONDS)
+        .setConnectionManager(new PoolingHttpClientConnectionManager(1000L, TimeUnit.MILLISECONDS))
+        .build();
     this.gson = new Gson();
   }
 
@@ -122,6 +131,7 @@ public class ProxySpeechlet implements Speechlet {
     final int statusCode = proxyResponse.getStatusLine().getStatusCode();
 
     if (statusCode < 200 || statusCode > 299) {
+      proxyResponse.getEntity();
       return new ProxyResponse()
           .withSpeech("Error handling request. Response code was " + statusCode);
     }
