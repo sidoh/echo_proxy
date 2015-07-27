@@ -12,8 +12,6 @@ import org.sidoh.echo_proxy.speechlet.ProxySpeechlet;
 
 public class ProxyServer {
   public static void main(String[] args) throws Exception {
-    BasicConfigurator.configure();
-
     final String proxyUrl = args[0];
     final int port;
 
