@@ -23,15 +23,16 @@ import org.apache.http.impl.client.DefaultConnectionKeepAliveStrategy;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
+import org.sidoh.echo_proxy.ProxyServerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class ProxySpeechlet implements Speechlet {
   private static final Logger LOG = LoggerFactory.getLogger(ProxySpeechlet.class);
 
-  private final String proxyUrl;
   private final HttpClient httpClient;
   private final Gson gson;
+  private ProxyServerConfig config;
 
   public static class ProxyRequest {
     private final String requestType;
@@ -76,11 +77,12 @@ public class ProxySpeechlet implements Speechlet {
     }
   }
 
-  public ProxySpeechlet(String proxyUrl) {
-    this.proxyUrl = proxyUrl;
+  public ProxySpeechlet(ProxyServerConfig config) {
+    this.config = config;
     this.httpClient = HttpClientBuilder
         .create()
         .disableAutomaticRetries()
+        .setMaxConnTotal(30)
         .evictExpiredConnections()
         .evictIdleConnections(1000L, TimeUnit.MILLISECONDS)
         .setConnectionManager(new PoolingHttpClientConnectionManager(1000L, TimeUnit.MILLISECONDS))
@@ -110,6 +112,10 @@ public class ProxySpeechlet implements Speechlet {
 
   private SpeechletResponse handleRequest(SpeechletRequest request, Session session) {
     try {
+      if (! config.allowUser(session.getUser().getUserId())) {
+        throw new SecurityException("User not in whitelist: " + session.getUser().getUserId());
+      }
+
       final ProxyResponse proxyResponse = postRequest(request, session);
       final SpeechletResponse response = buildResponse(proxyResponse.getSpeech());
       response.setShouldEndSession(proxyResponse.isShouldEndSession());
@@ -124,14 +130,18 @@ public class ProxySpeechlet implements Speechlet {
   private ProxyResponse postRequest(SpeechletRequest request, Session session) throws IOException {
     final String requestJson = gson.toJson(new ProxyRequest(request.getClass().getSimpleName(), request, session));
 
-    final HttpPost proxyRequest = new HttpPost(proxyUrl);
+    final HttpPost proxyRequest = new HttpPost(config.endpoint);
     proxyRequest.setEntity(new StringEntity(requestJson));
 
     final HttpResponse proxyResponse = httpClient.execute(proxyRequest);
     final int statusCode = proxyResponse.getStatusLine().getStatusCode();
 
     if (statusCode < 200 || statusCode > 299) {
-      proxyResponse.getEntity();
+      // Read response body to trigger connection close.
+      final String error = EntityUtils.toString(proxyResponse.getEntity());
+
+      LOG.error("Error handling response from remote server. Response code: {}, error: {}", statusCode, error);
+
       return new ProxyResponse()
           .withSpeech("Error handling request. Response code was " + statusCode);
     }

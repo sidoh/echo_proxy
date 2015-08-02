@@ -99,6 +99,16 @@
       <artifactId>jetty-all-server</artifactId>
       <version>8.1.10.v20130312</version>
     </dependency>
+    <dependency>
+      <groupId>org.yaml</groupId>
+      <artifactId>snakeyaml</artifactId>
+      <version>1.15</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>18.0</version>
+    </dependency>
   </dependencies>
 
   <build>

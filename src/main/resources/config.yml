@@ -1,0 +1,29 @@
+# This is the URL where requests will be sent. This has to be specified.
+endpoint: http://mydomain.com/path/to/endpoint
+
+# Port that the proxy server should listen on. The default is 8888.
+port: 8888
+
+# Set to true to verify signatures. This should always be set to true. Disabling
+# it means requests sent from non-Amazon parties will be forwarded.
+verifySignatures: true
+
+# Set to true to verify timestamps. This should be set to true to avoid replay
+# attacks.
+verifyTimestamps: true
+
+# If you want to restrict the list of applications that the proxy server will
+# forward requests for, add them here. Default behavior is to forward requests
+# for all applications.
+#
+#allowedApplications:
+# ? MyApplicationId-XXXX-XX-XX...
+# ? MyApplicationId2-XXXX-XX-XX...
+
+# If you want to restrict the list of Amazon user IDs that the proxy server will
+# forward requests for, add them here. Like above, default behavior is to
+# forward all valid requests.
+#
+#allowedUsers:
+# ? UserID1
+# ? UserID2
