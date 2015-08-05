@@ -27,7 +27,7 @@ Edit `./echo_proxy/config/config.yml` to suit your needs. In particular, make su
 You should be able to start the server with the provided `run.sh` script:
 
 ```
-$ ./bin/run.sh
+$ ./echo_proxy/bin/run.sh
 ```
 
 This is just a wrapper around some `mvn` calls. Since Amazon's library isn't available in a Maven repository, this installs it to the local repository before executing anything.
