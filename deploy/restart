@@ -1,9 +1,0 @@
-#!/bin/sh
-
-if [ $(screen -ls | grep echo_proxy | wc -l) -eq 0 ]; then
-  screen -S echo_proxy -d -m /bin/bash
-  sleep 0.1
-fi
-
-screen -x echo_proxy -X stuff '^c'
-screen -x echo_proxy -X stuff './run.sh "http://echo.sidoh.org/commands"\n'
