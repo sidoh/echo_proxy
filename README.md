@@ -32,6 +32,10 @@ $ ./echo_proxy/bin/run.sh
 
 This is just a wrapper around some `mvn` calls. Since Amazon's library isn't available in a Maven repository, this installs it to the local repository before executing anything.
 
+#### Run it! (As a daemon)
+
+You can also use `./echo_proxy/bin/start` to run `echo_proxy` as a daemon. Output will be redirected to `./echo_proxy/log/echo_proxy.out`. You can use `./echo_proxy/bin/stop` to stop the daemon.
+
 ## Integrating
 
 The server sends a `POST` request to the provided URL. The request information sent by Amazon is stuffed into a single object, and put in the body of the `POST` request. Here's a sample request:
