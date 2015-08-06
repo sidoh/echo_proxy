@@ -1,0 +1,15 @@
+#!/bin/bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+source $DIR/locate.sh
+
+pid=$(echo_proxy_locate)
+if [[ ! -z "$pid" ]]; then
+  pkill -TERM -P "$pid" || exit 1
+
+  while [[ "$(echo_proxy_locate)" == "$pid" ]]; do
+    echo "$0: waiting for shutdown..."
+    sleep 1
+  done
+fi

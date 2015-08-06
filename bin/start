@@ -1,0 +1,8 @@
+#!/bin/bash
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+source $DIR/locate.sh
+
+nohup bash -c "$DIR/run.sh" &> $(echo_proxy_logdir)/echo_proxy.out &
+echo $! > $(echo_proxy_pidfile)
