@@ -1,6 +1,8 @@
 # echo_proxy
 A server that forwards requests from Amazon's Alexa API to a configurable location
 
+You might also consider checking out [alexa_dispatcher](https://github.com/sidoh/alexa_dispatcher), which allows you to forward requests for different Alexa skills to different endpoints.
+
 ## About
 
 `echo_proxy` is a simple servlet that receives requests from Amazon's Alexa API and forwards them to a configurable location. There are two reasons you might want this:
