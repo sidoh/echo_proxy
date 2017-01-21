@@ -10,9 +10,9 @@
 
   <dependencies>
     <dependency>
-      <groupId>amazon</groupId>
-      <artifactId>amazon-alexa</artifactId>
-      <version>1.0.120.0</version>
+      <groupId>com.amazon.alexa</groupId>
+      <artifactId>alexa-skills-kit</artifactId>
+      <version>1.2</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse.jetty</groupId>
