@@ -32,7 +32,7 @@ You should be able to start the server with the provided `run.sh` script:
 $ ./echo_proxy/bin/run.sh
 ```
 
-This is just a wrapper around some `mvn` calls. Since Amazon's library isn't available in a Maven repository, this installs it to the local repository before executing anything.
+This is just a wrapper around a `mvn` command.
 
 #### Run it! (As a daemon)
 
